@@ -10,5 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: uv tool install ruff typos-cli
-      - run: just check
+      - uses: astral-sh/setup-uv@v4
+      - run: uv tool install ruff
+      - run: |
+          curl -sSL "$(curl -s https://api.github.com/repos/crate-ci/typos/releases/latest | python3 -c 'import json,sys;print([a["browser_download_url"] for a in json.load(sys.stdin)["assets"] if "linux-musl" in a["name"] and "x86_64" in a["name"]][0])')" | tar xmz
+          sudo mv typos /usr/local/bin/
+      - run: ruff check upload.py crypto.py "Send via ffsend/upload.py" "Send via ffsend/crypto.py"
+      - run: ruff format --check upload.py crypto.py "Send via ffsend/upload.py" "Send via ffsend/crypto.py"
+      - run: typos upload.py crypto.py
