@@ -3,12 +3,19 @@ on:
   push:
     tags: ["v*"]
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd "Send via ffsend" && zip -r "../Send-v${GITHUB_REF_NAME#v}.alfredworkflow" . -x "*.DS_Store"
+      - run: |
+          TAG=${GITHUB_REF_NAME#v}
+          cd "Send via ffsend"
+          zip -r "../Send-v${TAG}.alfredworkflow" . -x "*.DS_Store"
+          echo "TAG=${TAG}" >> "$GITHUB_ENV"
       - uses: softprops/action-gh-release@v2
         with:
-          files: Send-v${{ github.ref_name }}.alfredworkflow
+          files: "Send-v${{ env.TAG }}.alfredworkflow"
