@@ -80,7 +80,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>/usr/bin/env -S uv run --script "$PWD/upload.py" "$1"</string>
+				<string>/usr/bin/env python3 "$PWD/upload.py" "$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -139,11 +139,73 @@ Usage:
 - Right-click a file in Finder and select "Send via ffsend"
 - Or use Universal Action on any file
 
-Configure via environment variables:
-- SEND_SERVER: Server URL (default: https://send.willner.ws)
-- SEND_DLIMIT: Max downloads (default: 3)
-
 Requires: uv, Python 3.11+</string>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>https://send.vis.ee</string>
+				<key>placeholder</key>
+				<string>https://send.example.com</string>
+				<key>required</key>
+				<true/>
+				<key>text</key>
+				<string>Send Server URL</string>
+			</dict>
+			<key>description</key>
+			<string>The ffsend/send server to upload files to (FFSEND_HOST)</string>
+			<key>label</key>
+			<string>Server</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>FFSEND_HOST</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>3</string>
+				<key>placeholder</key>
+				<string>3</string>
+				<key>required</key>
+				<true/>
+				<key>text</key>
+				<string>Max Downloads</string>
+			</dict>
+			<key>description</key>
+			<string>Maximum number of downloads before the file expires (FFSEND_DOWNLOAD_LIMIT)</string>
+			<key>label</key>
+			<string>Download Limit</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>FFSEND_DOWNLOAD_LIMIT</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>86400</string>
+				<key>placeholder</key>
+				<string>86400</string>
+				<key>required</key>
+				<true/>
+				<key>text</key>
+				<string>Expiry Time (seconds)</string>
+			</dict>
+			<key>description</key>
+			<string>Time in seconds before the file expires (FFSEND_EXPIRY_TIME)</string>
+			<key>label</key>
+			<string>Expiry</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>FFSEND_EXPIRY_TIME</string>
+		</dict>
+	</array>
 	<key>uidata</key>
 	<dict>
 		<key>FILE-ACTION-UID</key>
@@ -178,6 +240,6 @@ Requires: uv, Python 3.11+</string>
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string>https://github.com/timvisee/send</string>
+	<string>https://github.com/timvisee/ffsend</string>
 </dict>
 </plist>

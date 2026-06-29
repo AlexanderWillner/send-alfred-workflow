@@ -24,7 +24,7 @@ Environment variables (set in workflow's script or system):
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SEND_SERVER` | `https://send.willner.ws` | Send server URL |
+| `SEND_SERVER` | *(required)* | Send server URL |
 | `SEND_DLIMIT` | `3` | Max download count |
 
 ## Installation

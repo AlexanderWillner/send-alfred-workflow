@@ -1,10 +1,4 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#     "cryptography",
-# ]
-# ///
+#!/usr/bin/env python3
 from __future__ import annotations
 
 import base64
@@ -18,48 +12,16 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.hashes import SHA256
-from cryptography.hazmat.primitives.hmac import HMAC
-from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from crypto import aes_gcm_encrypt, hkdf_derive
 
-SEND_SERVER = os.environ.get("SEND_SERVER", "https://send.willner.ws")
-DEFAULT_DLIMIT = int(os.environ.get("SEND_DLIMIT", "3"))
+SEND_SERVER = os.environ.get("FFSEND_HOST", "https://send.vis.ee")
+DEFAULT_DLIMIT = int(os.environ.get("FFSEND_DOWNLOAD_LIMIT", "3"))
+DEFAULT_EXPIRY = os.environ.get("FFSEND_EXPIRY_TIME", "86400")
 
 NONCE_LEN = 12
 TAG_LEN = 16
 KEY_LEN = 16
 ECE_RECORD_SIZE = 65536
-
-
-def hkdf_derive(ikm: bytes, info: bytes, length: int = 16) -> bytes:
-    hkdf = HKDF(
-        algorithm=SHA256(),
-        length=length,
-        salt=None,
-        info=info,
-    )
-    return hkdf.derive(ikm)
-
-
-def ece_derive_key(ikm: bytes, salt: bytes) -> bytes:
-    hkdf = HKDF(
-        algorithm=SHA256(),
-        length=16,
-        salt=salt,
-        info=b"Content-Encoding: aes128gcm\x00",
-    )
-    return hkdf.derive(ikm)
-
-
-def ece_derive_nonce_base(ikm: bytes, salt: bytes) -> bytes:
-    hkdf = HKDF(
-        algorithm=SHA256(),
-        length=16,
-        salt=salt,
-        info=b"Content-Encoding: nonce\x00",
-    )
-    return hkdf.derive(ikm)[:NONCE_LEN]
 
 
 def xor_nonce(nonce_base: bytes, seq: int) -> bytes:
@@ -71,8 +33,8 @@ def xor_nonce(nonce_base: bytes, seq: int) -> bytes:
 
 def ece_encrypt(plaintext: bytes, ikm: bytes, rs: int = ECE_RECORD_SIZE) -> bytes:
     salt = os.urandom(KEY_LEN)
-    key = ece_derive_key(ikm, salt)
-    nonce_base = ece_derive_nonce_base(ikm, salt)
+    key = hkdf_derive(ikm, salt + b"Content-Encoding: aes128gcm\x00", KEY_LEN)
+    nonce_base = hkdf_derive(ikm, salt + b"Content-Encoding: nonce\x00", NONCE_LEN)
 
     header = salt + struct.pack(">I", rs) + struct.pack("B", 0)
 
@@ -91,8 +53,7 @@ def ece_encrypt(plaintext: bytes, ikm: bytes, rs: int = ECE_RECORD_SIZE) -> byte
             padded = chunk + b"\x01" + b"\x00" * (pad_len - 1)
 
         nonce = xor_nonce(nonce_base, seq)
-        aesgcm = AESGCM(key)
-        encrypted = aesgcm.encrypt(nonce, padded, None)
+        encrypted = aes_gcm_encrypt(key, nonce, padded)
         records.append(encrypted)
         offset += len(chunk)
         seq += 1
@@ -101,10 +62,9 @@ def ece_encrypt(plaintext: bytes, ikm: bytes, rs: int = ECE_RECORD_SIZE) -> byte
 
 
 def encrypt_metadata(meta_key: bytes, metadata: dict) -> bytes:
-    aesgcm = AESGCM(meta_key)
     iv = b"\x00" * NONCE_LEN
     plaintext = json.dumps(metadata).encode("utf-8")
-    return aesgcm.encrypt(iv, plaintext, None)
+    return aes_gcm_encrypt(meta_key, iv, plaintext)
 
 
 def upload_file(file_path: str) -> str:
@@ -159,9 +119,9 @@ def upload_file(file_path: str) -> str:
     owner_token = result["owner"]
     file_id = result["id"]
 
-    params_data = json.dumps({"owner_token": owner_token, "dlimit": DEFAULT_DLIMIT}).encode(
-        "utf-8"
-    )
+    params_data = json.dumps(
+        {"owner_token": owner_token, "dlimit": DEFAULT_DLIMIT, "expiry": DEFAULT_EXPIRY}
+    ).encode("utf-8")
     params_req = urllib.request.Request(
         f"{SEND_SERVER}/api/params/{file_id}",
         data=params_data,
@@ -172,9 +132,9 @@ def upload_file(file_path: str) -> str:
     try:
         with urllib.request.urlopen(params_req, timeout=30) as resp:
             if resp.status != 200:
-                print(f"Warning: Failed to set download limit", file=sys.stderr)
+                print("Warning: Failed to set download limit", file=sys.stderr)
     except urllib.error.HTTPError:
-        print(f"Warning: Failed to set download limit", file=sys.stderr)
+        print("Warning: Failed to set download limit", file=sys.stderr)
 
     secret_b64 = base64.b64encode(secret).decode("ascii")
     share_url = f"{url}#{secret_b64}"

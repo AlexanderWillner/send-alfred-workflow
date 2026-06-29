@@ -14,14 +14,19 @@ build:
 
 # Test upload with a sample file
 test *files:
-    @uv run --script upload.py {{files}}
+    @python3 upload.py {{files}}
 
-# Lint the Python script
+# Lint and type-check the Python scripts
 lint:
-    @ruff check upload.py
-    @ruff format --check upload.py
+    @ruff check upload.py crypto.py
+    @ruff format --check upload.py crypto.py
+    @typos upload.py crypto.py
 
-# Format the Python script
+# Format and auto-fix the Python scripts
 fmt:
-    @ruff format upload.py
-    @ruff check --fix upload.py
+    @ruff format upload.py crypto.py
+    @ruff check --fix upload.py crypto.py
+
+# Check everything (used in CI)
+check: lint
+    @echo "All checks passed."
