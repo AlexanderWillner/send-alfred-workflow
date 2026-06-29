@@ -133,13 +133,17 @@
 		</dict>
 	</array>
 	<key>readme</key>
-	<string>Upload files to any ffsend/send server using E2E encryption.
+	<string>Upload files to any ffsend compatible server with end-to-end encryption. Files are encrypted client-side and the shareable link is copied to your clipboard.
 
-Usage:
-- Right-click a file in Finder and select "Send via ffsend"
-- Or use Universal Action on any file
+## Usage
 
-Requires: uv, Python 3.11+</string>
+Upload files via the Universal Action or a File Action in Finder.
+
+* ↩ Upload file and copy encrypted share link to clipboard.
+
+## Workflow Configuration
+
+The server URL, download limit, and expiry time can be configured in the Workflow's Configuration.</string>
 	<key>userconfigurationconfig</key>
 	<array>
 		<dict>
@@ -240,6 +244,6 @@ Requires: uv, Python 3.11+</string>
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string>https://github.com/timvisee/ffsend</string>
+	<string>https://github.com/AlexanderWillner/send-alfred-workflow</string>
 </dict>
 </plist>
