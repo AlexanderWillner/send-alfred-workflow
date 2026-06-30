@@ -2,4 +2,4 @@
 .env.local
 __pycache__/
 .playwright-cli/
-"Send via ffsend.alfredworkflow"
+Send via ffsend.alfredworkflow
