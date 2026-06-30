@@ -4,11 +4,10 @@ Upload files to any [ffsend](https://github.com/timvisee/send) compatible server
 
 ## Usage
 
-Upload files via the Universal Action or a File Action in Finder.
+* Type `send` in Alfred to open a file picker, or use the Universal Action / File Action in Finder.
+* <kbd>↩</kbd> Upload file and copy encrypted share link to clipboard.
 
 ![Uploading a file via Universal Action](images/upload.png)
-
-* <kbd>↩</kbd> Upload file and copy encrypted share link to clipboard.
 
 ## Workflow Configuration
 

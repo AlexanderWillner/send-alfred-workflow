@@ -21,6 +21,32 @@
 				<false/>
 			</dict>
 		</array>
+		<key>KEYWORD-UID</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>FILE-PICKER-UID</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>FILE-PICKER-UID</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>RUN-SCRIPT-UID</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>RUN-SCRIPT-UID</key>
 		<array>
 			<dict>
@@ -71,6 +97,50 @@
 			<string>FILE-ACTION-UID</string>
 			<key>version</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>send</string>
+				<key>subtext</key>
+				<string>Select a file to encrypt and upload</string>
+				<key>text</key>
+				<string>Send via ffsend</string>
+				<key>withspace</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.keyword</string>
+			<key>uid</key>
+			<string>KEYWORD-UID</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>osascript -e 'POSIX path of (choose file with prompt "Select a file to encrypt and upload")'</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>5</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>FILE-PICKER-UID</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -137,8 +207,7 @@
 
 ## Usage
 
-Upload files via the Universal Action or a File Action in Finder.
-
+* Type `send` in Alfred to open a file picker, or use the Universal Action / File Action in Finder.
 * ↩ Upload file and copy encrypted share link to clipboard.
 
 ## Workflow Configuration
@@ -219,6 +288,20 @@ The server URL, download limit, and expiry time can be configured in the Workflo
 			<key>ypos</key>
 			<real>50</real>
 		</dict>
+		<key>KEYWORD-UID</key>
+		<dict>
+			<key>xpos</key>
+			<real>50</real>
+			<key>ypos</key>
+			<real>250</real>
+		</dict>
+		<key>FILE-PICKER-UID</key>
+		<dict>
+			<key>xpos</key>
+			<real>300</real>
+			<key>ypos</key>
+			<real>250</real>
+		</dict>
 		<key>RUN-SCRIPT-UID</key>
 		<dict>
 			<key>xpos</key>
@@ -242,7 +325,7 @@ The server URL, download limit, and expiry time can be configured in the Workflo
 		</dict>
 	</dict>
 	<key>version</key>
-	<string>1.0.0</string>
+	<string>1.0.1</string>
 	<key>webaddress</key>
 	<string>https://github.com/AlexanderWillner/send-alfred-workflow</string>
 </dict>
